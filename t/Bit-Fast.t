@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Config;
-use Test::More tests => 138;
+use Test::More tests => 200;
 #use Test::More qw(no_plan);
 BEGIN {
     if (8 == $Config{longsize}) {
@@ -28,7 +28,7 @@ for (my $i = 0; $i < 32; ++$i) {
 }
 
 SKIP: {
-    skip "32-bit build of Perl", 66 if $Config{longsize} == 4;
+    skip "32-bit build of Perl", 128 if $Config{longsize} == 4;
     for (my $i = 0; $i < 32; ++$i) {
         my $n = 1 << $i;
         is popcountl($n), 1, "number of bits in $n is 1";
