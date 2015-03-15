@@ -4,12 +4,16 @@ use strict;
 use warnings;
 
 require Exporter;
+use Config;
 
 our @ISA = qw(Exporter);
 
-our %EXPORT_TAGS = ( 'all' => [ qw(
-    popcount popcountl
-) ] );
+my @funcs = qw(popcount);
+if ($Config{longsize} == 8) {
+    push @funcs, qw(popcountl);
+}
+
+our %EXPORT_TAGS = ( 'all' => \@funcs );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
@@ -46,7 +50,8 @@ Returns the number of 1-bits in $v.  Works on 32-bit integers.
 
 =head2 popcountl($v)
 
-Returns the number of 1-bits in $v.  Works on 64-bit integers.
+Returns the number of 1-bits in $v.  Works on 64-bit integers.  (This
+function is not provided on 32-bits builds of perl.)
 
 =head1 AUTHOR
 

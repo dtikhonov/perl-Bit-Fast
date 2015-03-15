@@ -25,6 +25,8 @@ popcount (v)
     OUTPUT:
         RETVAL
 
+#if LONGSIZE == 8
+
 int
 popcountl (v)
         unsigned long v
@@ -42,3 +44,5 @@ popcountl (v)
 #endif
     OUTPUT:
         RETVAL
+
+#endif

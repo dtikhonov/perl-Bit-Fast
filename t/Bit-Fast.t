@@ -1,9 +1,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 202;
+use Config;
+use Test::More tests => 138;
 #use Test::More qw(no_plan);
-BEGIN { use_ok('Bit::Fast', 'popcount', 'popcountl') };
+BEGIN {
+    if (8 == $Config{longsize}) {
+        use_ok('Bit::Fast', 'popcount', 'popcountl');
+    } else {
+        use_ok('Bit::Fast', 'popcount');
+    }
+}
 
 is popcount(0),     0, "number of 1-bits in 0 is 0";
 is popcount(1),     1, "number of 1-bits in 1 is 1";
@@ -16,22 +23,24 @@ is popcount(129),   2, "number of 1-bits in 129 is 2";
 for (my $i = 0; $i < 32; ++$i) {
     my $n = 1 << $i;
     is popcount($n), 1, "number of bits in $n is 1";
-    is popcountl($n), 1, "number of bits in $n is 1";
     --$n;
     is popcount($n), $i, "number of bits in $n is $i";
-    is popcountl($n), $i, "number of bits in $n is $i";
 }
 
-for (my $i = 32; $i < 63; ++$i) {
-    my $n = 1 << $i;
-    is popcountl($n), 1, "number of bits in $n is 1";
-    --$n;
-    is popcountl($n), $i, "number of bits in $n is $i";
-}
-
-is popcountl((129 << 32) | 129), 4;
-is popcountl((3 << 60) | (129 << 32) | 129), 6;
-
-# Here the value gets cast to 4-byte integer:
-is popcount((129 << 32) | 129), 2;
-is popcount((3 << 60) | (129 << 32) | 129), 2;
+SKIP: {
+    skip "32-bit build of Perl", 66 if $Config{longsize} == 4;
+    for (my $i = 0; $i < 32; ++$i) {
+        my $n = 1 << $i;
+        is popcountl($n), 1, "number of bits in $n is 1";
+        --$n;
+        is popcountl($n), $i, "number of bits in $n is $i";
+    }
+    for (my $i = 32; $i < 63; ++$i) {
+        my $n = 1 << $i;
+        is popcountl($n), 1, "number of bits in $n is 1";
+        --$n;
+        is popcountl($n), $i, "number of bits in $n is $i";
+    }
+    is popcountl((129 << 32) | 129), 4;
+    is popcountl((3 << 60) | (129 << 32) | 129), 6;
+};
